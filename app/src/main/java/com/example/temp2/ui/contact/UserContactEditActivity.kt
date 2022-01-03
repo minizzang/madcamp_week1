@@ -7,6 +7,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import com.example.temp2.R
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
 
 class UserContactEditActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +25,15 @@ class UserContactEditActivity : AppCompatActivity() {
 
         btn_editComplete.setOnClickListener(View.OnClickListener() {
             //file에 정보 write
+            val userFile : File? = this.getFileStreamPath("user.txt")
+            val fileWriter = FileWriter(userFile, false)
+            val bufferedWriter = BufferedWriter(fileWriter)
+
+            bufferedWriter.append(userName.text.toString()) // user name
+            bufferedWriter.newLine()
+            bufferedWriter.append(userNumber.text.toString()) // user number
+            bufferedWriter.newLine()
+            bufferedWriter.close()
             finish()
         })
     }

@@ -1,6 +1,7 @@
 package com.example.temp2.ui.contact
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.temp2.Profiles
 import com.example.temp2.databinding.FragmentContactBinding
 import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
 
 class ContactFragment : Fragment() {
 
@@ -36,9 +40,31 @@ class ContactFragment : Fragment() {
         val profileList: ArrayList<Profiles> = arrayListOf()
         val jObject = JSONObject(jsonString)
         val jArray = jObject.getJSONArray("contacts")
-        profileList.add(Profiles(Profiles.USER_TYPE, "김민희", "010-1234-5678"))
 
+        lateinit var userName : String
+        lateinit var userNumber : String
 
+        // read user data from file(user.txt)
+        val userFile : File = requireContext().getFileStreamPath("user.txt")
+
+        if(userFile.exists()) {
+            val userDataReader = FileReader(userFile)
+            val userDataBufferedReader : BufferedReader = BufferedReader(userDataReader)
+            val userData : ArrayList<String> = arrayListOf<String>()
+            userDataBufferedReader.readLines().forEach {
+                userData.add(it)
+            }
+            userDataBufferedReader.close()
+            if(userData.size < 2) {
+                profileList.add(Profiles(Profiles.USER_TYPE, "김민희", "010-1234-5678"))
+            }
+            else {
+                profileList.add(Profiles(Profiles.USER_TYPE, userData[0], userData[1]))
+            }
+        }
+        else {
+            profileList.add(Profiles(Profiles.USER_TYPE, "김민희", "010-1234-5678"))
+        }
         for(i in 0 until jArray.length()) {
             val obj = jArray.getJSONObject(i)
             val name = obj.getString("name")
